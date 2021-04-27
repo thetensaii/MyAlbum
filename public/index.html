@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Gallery</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+          rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/swipebox.css">
+    <link href="css/dropzone.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="fonts/feather/style.css">
+    <style>
+        /* The container */
+        .container {
+            display: block;
+            position: relative;
+            padding-left: 35px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            font-size: 22px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Hide the browser's default checkbox */
+        .container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        /* Create a custom checkbox */
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 25px;
+            width: 25px;
+            background-color: #eee;
+        }
+
+        /* On mouse-over, add a grey background color */
+        .container:hover input ~ .checkmark {
+            background-color: #ccc;
+        }
+
+        /* When the checkbox is checked, add a blue background */
+        .container input:checked ~ .checkmark {
+            background-color: #2196F3;
+        }
+
+        /* Create the checkmark/indicator (hidden when not checked) */
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+
+        /* Show the checkmark when checked */
+        .container input:checked ~ .checkmark:after {
+            display: block;
+        }
+
+        /* Style the checkmark/indicator */
+        .container .checkmark:after {
+            left: 9px;
+            top: 5px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 3px 3px 0;
+            -webkit-transform: rotate(45deg);
+            -ms-transform: rotate(45deg);
+            transform: rotate(45deg);
+        }
+    </style>
+    <style>
+        .dz-error-message {
+            margin-top: 20px;
+        }
+
+        .dropzone {
+            min-height: 350px;
+            border: 2px dashed #009DA0;
+            background: #F5F7FA;
+        }
+
+        .dropzone .dz-message {
+            font-size: 2rem;
+            position: absolute;
+            top: 20%;
+            left: 0;
+            width: 100%;
+            height: 300px;
+            margin-top: -30px;
+            color: #009DA0;
+            text-align: center;
+        }
+
+        .dropzone .dz-message:before {
+            content: '\e94b';
+            font-family: 'feather';
+            font-size: 80px;
+            position: absolute;
+            top: 48px;
+            width: 80px;
+            height: 80px;
+            display: inline-block;
+            left: 50%;
+            margin-left: -40px;
+            line-height: 1;
+            z-index: 2;
+            color: #009DA0;
+            text-indent: 0;
+            font-weight: normal;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .dropzone .dz-preview.dz-image-preview {
+            background: transparent;
+        }
+
+        .dropzone .dz-preview .dz-remove {
+            font-size: 1.1rem;
+            line-height: 2rem;
+        }
+
+        .dropzone .dz-preview .dz-remove:before {
+            content: '\e9e6';
+            font-family: 'feather';
+            display: inline-block;
+            line-height: 1;
+            z-index: 2;
+            text-indent: 0;
+            font-weight: normal;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .dropzone .dz-preview .dz-remove:hover {
+            text-decoration: none;
+        }
+		#swipebox-overlay{
+			position: fixed;
+		}
+		
+		#myImg:hover {opacity: 0.7;}
+
+#image-zoom {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 3; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+}
+
+/* Modal Content (image) */
+.modal-content {
+  margin: auto;
+  display: block;
+}
+
+.modal-wrapper {
+  margin: auto;
+  display: inline-block;
+}
+
+/* Caption of Modal Image */
+#caption {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 700px;
+  text-align: center;
+  color: #ccc;
+  padding: 10px 0;
+  height: 150px;
+}
+
+/* Add Animation */
+.modal-content, #caption {  
+  -webkit-animation-name: zoom;
+  -webkit-animation-duration: 0.6s;
+  animation-name: zoom;
+  animation-duration: 0.6s;
+}
+
+@-webkit-keyframes zoom {
+  from {-webkit-transform:scale(0)} 
+  to {-webkit-transform:scale(1)}
+}
+
+@keyframes zoom {
+  from {transform:scale(0)} 
+  to {transform:scale(1)}
+}
+
+/* The Close Button */
+.close {
+  position: absolute;
+  top: 15px;
+  right: 35px;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+  color: #bbb;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* 100% Image Width on Smaller Screens */
+@media only screen and (max-width: 700px){
+  .modal-content {
+    width: 100%;
+  }
+
+  }
+#mouse-label{
+            z-index: 10;
+            position: fixed;
+            display: none;
+            padding-left: 2px;
+            padding-right: 2px;
+	    color: black;
+            background-color: rgba(255, 255, 255, 0.85);
+        } 
+</style>
+</head>
+
+<body id="page-top">
+
+<!-- Page Wrapper -->
+<div id="wrapper">
+
+    <!-- Sidebar -->
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+        <!-- Sidebar - Brand -->
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+            <div class="sidebar-brand-icon rotate-n-15">
+                <i class="fas fa-laugh-wink"></i>
+            </div>
+            <div class="sidebar-brand-text mx-3">Gallery <sup>2</sup></div>
+        </a>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider my-0">
+
+        <!-- Nav Item - Dashboard -->
+        <li class="nav-item active">
+            <a class="nav-link" href="gallery">
+                <i class="fas fa-fw fa-images"></i>
+                <span>Gallery</span></a>
+        </li>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+
+        <!-- Heading -->
+        <div class="sidebar-heading">
+            Interface
+        </div>
+
+        <li class="nav-item">
+            <a class="nav-link" href="gallery">
+                <i class="fas fa-fw fa-images"></i>
+                <span>People</span></a>
+        </li>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider d-none d-md-block">
+
+        <!-- Sidebar Toggler (Sidebar) -->
+        <div class="text-center d-none d-md-inline">
+            <button class="rounded-circle border-0" id="sidebarToggle"></button>
+        </div>
+
+    </ul>
+    <!-- End of Sidebar -->
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+        <!-- Main Content -->
+        <div id="content">
+
+            <!-- Topbar -->
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+                <!-- Sidebar Toggle (Topbar) -->
+                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                    <i class="fa fa-bars"></i>
+                </button>
+
+                <!-- Topbar Search -->
+                <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                    <div class="input-group">
+                        <input type="text" id="research" class="form-control bg-light border-0 small" placeholder="Search for..."
+                               aria-label="Search" aria-describedby="basic-addon2" oninput="search()">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="button" onclick="research()">
+                                <i class="fas fa-search fa-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Topbar Navbar -->
+                <ul class="navbar-nav ml-auto">
+
+                    <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+                    <li class="nav-item dropdown no-arrow d-sm-none">
+                        <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <!-- Dropdown - Messages -->
+                        <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+                             aria-labelledby="searchDropdown">
+                            <form class="form-inline mr-auto w-100 navbar-search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control bg-light border-0 small"
+                                           placeholder="Search for..." aria-label="Search"
+                                           aria-describedby="basic-addon2">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" type="button">
+                                            <i class="fas fa-search fa-sm"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </li>
+
+                    <div class="topbar-divider d-none d-sm-block"></div>
+
+                    <!-- Nav Item - User Information -->
+                    <li class="nav-item dropdown no-arrow">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="mr-2 d-none d-lg-inline text-gray-600 small info-profile"></span>
+                            <img class="img-profile rounded-circle" src="https://source.unsplash.com/QAB-WJcbgJk/60x60">
+                        </a>
+                        <!-- Dropdown - User Information -->
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                             aria-labelledby="userDropdown">
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Settings
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Logout
+                            </a>
+                        </div>
+                    </li>
+
+                </ul>
+
+            </nav>
+            <!-- End of Topbar -->
+
+            <!-- Begin Page Content -->
+            <div class="container-fluid">
+
+                <!-- Page Heading -->
+                <h1 class="h3 mb-4 text-gray-800">Gallery</h1>
+
+                <a href="#" onclick="$('#file-upload').modal('show');" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+              <i class="fas fa-plus"></i>
+            </span>
+                    <span class="text">Add Image</span>
+                </a>
+
+                <div id="lightgallery" class="list-unstyled row">
+                </div>
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+        <!-- End of Main Content -->
+
+        <!-- Footer -->
+        <footer class="sticky-footer bg-white">
+            <div class="container my-auto">
+                <div class="copyright text-center my-auto">
+                    <span>Copyright &copy; Gallery 2020</span>
+                </div>
+            </div>
+        </footer>
+        <!-- End of Footer -->
+
+    </div>
+    <!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<!-- Logout Modal-->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-primary" href="login.html">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="file-upload" tabindex="-1" role="dialog" aria-labelledby="fileUploadLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="fileUploadLabel">Upload images</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="#" class="dropzone dropzone-area" id="dpz">
+                    <div class="text-center">Click Here or Drop Files HEre to Upload</div>
+                    <div class="dz-message"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="image-zoom" class="modal">
+	<div class="center-container" style="display:flex"><div id="wrapper-photo" class="modal-wrapper" style="display: inline-block"><img class="modal-content" id="image-content" style="width: auto;max-height: 80vh;max-width: 80vw;"></div></div>
+	
+			<div class="row" style="position:fixed;width:100%;margin:0px;top:10px">
+				<div class="col-6">
+					<div class="text-left py-2 px-4"><i class="fas fa-times fa-2x" onclick="closeImage()"></i></div>
+				</div>
+				<div class="col-6">
+					<div class="text-right py-2 px-4"><i class="fas fa-trash fa-2x" onclick="trashImage()"></i></div>
+				</div>
+			</div>
+			<div class="row align-items-center" style="position:fixed;width:100%;height:auto;margin:0px;top:45vh">
+				<div class="col-6">
+					<div class="text-left py-2 px-4"><i class="fas fa-angle-left fa-2x" onclick="prevImage()"></i></div>
+				</div>
+				<div class="col-6">
+					<div class="text-right py-2 px-4"><i class="fas fa-angle-right fa-2x" onclick="nextImage()"></i></div>
+				</div>
+			</div>
+			<div id="mouse-label" style="width:max-content"></div>
+			<div class="row align-items-end" style="position:fixed;width:100%;margin:0px;bottom:0px">
+
+				<div class="col-6 text-right">
+					<button class="btn-primary" onclick="togleFacesBox()">Afficher/masquer les visages</button>
+					
+				</div>
+				<div class="col-6">
+					<button class="btn-primary" onclick="togleObjectsBox()">Afficher/masquer les objects</button>
+				</div>
+			</div>
+		
+</div>
+
+<header class="SCREEN-LOADING bg-light" style="position: fixed; width: 100%; height: 100vh; z-index: 10;top:0px">
+    <div class="py-5 my-5"></div>
+    <div class="text-center text-dark">
+        <h1><i class="fa fa-spinner fa-pulse"></i></h1>
+    </div>
+    <h1 class="text-center text-dark"><b><b>Loading</b></b></h1>
+</header>
+
+
+<div id="gallery-template" style="display:none">
+    <li class="col-xs-6 col-sm-6 col-md-4 col-lg-3 mt-2 text-center"
+        data-responsive="/api/image/{{image}}?t={{timestamp}}" data-src="/api/image/{{image}}?t={{timestamp}}">
+        <a href="/api/image/{{image}}" class="swipebox" title="My Caption" onclick="loadZoom(this)">
+            <img class="img-responsive w-100" src="/api/image/{{image}}?t={{timestamp}}" alt="image">
+        </a>
+    </li>
+</div>
+
+<!-- Bootstrap core JavaScript-->
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Core plugin JavaScript-->
+<script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+<!-- Custom scripts for all pages-->
+<script src="js/sb-admin-2.min.js"></script>
+<script src="js/jquery.swipebox.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.0/dropzone.min.js"></script>
+<script>
+    Dropzone.autoDiscover = false;
+    window.onload = function () {
+        initDropzone();
+        $(".SCREEN-LOADING").hide("fadeout");
+        loadGallery();
+    }
+
+    var images = [];
+    var current_index;
+    var notinit = true;
+
+    var styleEl = document.createElement('style');
+    document.head.appendChild(styleEl);
+    var styleSheet = styleEl.sheet;
+
+    var boxFaces = true;
+    var boxObjects = true;
+
+    function togleFacesBox(){
+        boxFaces =!boxFaces;
+        if(boxFaces){
+		for(var i in styleSheet.cssRules){
+                        if(styleSheet.cssRules[i].selectorText==".face-box")
+                        styleSheet.deleteRule(i);
+                }
+	}else{
+		styleSheet.insertRule('.face-box { display:none}', 0); 
+	}
+    }
+
+    function togleObjectsBox(){
+	boxObjects =!boxObjects;
+        if(boxObjects){
+		for(var i in styleSheet.cssRules){
+	                if(styleSheet.cssRules[i].selectorText==".object-box")
+			styleSheet.deleteRule(i);
+		}
+        }else{
+                styleSheet.insertRule('.object-box { display:none}', 0); 
+        }
+    }
+
+    togleFacesBox();
+    togleObjectsBox();
+
+    function loadGallery(callback,url) {
+	if(url==undefined)
+                url = "/api/images?t=" + new Date().getTime();
+        $.get(url)
+            .then(function (response) {
+			var template = $("#gallery-template").html();
+			var timestamp = new Date().getTime();
+			var content = [];
+			images = [];
+			for (var i in response) {
+				var image = response[i].src;
+				images.push(image);
+				content.push(template.replace(/{{image}}/g, image).replace(/{{timestamp}}/g, timestamp));
+			}
+			$('#lightgallery').html(content.join(""));
+			$( '.swipebox' ).swipebox();
+			if(callback) callback();
+		})
+    }
+
+	function search(){
+                var query = $("#research").val();
+		if(query.length>0)
+	                loadGallery(null,"/api/images/research?query="+query+"&t=" + new Date().getTime());
+        	else
+			loadGallery();
+	}
+	
+	function openImage(index){
+		$(".box").remove()
+		image = images[index];
+		$('#image-zoom').css("display","block");
+		$('#image-content').attr("src","/api/image/"+image);
+		setTimeout(function(){
+		$.get("/api/image/"+image+"/info?t=" + new Date().getTime()).then(function (response) {
+			console.log(response);
+			var detection = response["detection"];
+			for(var i in detection){
+				console.log(detection);
+				$("#wrapper-photo").append(createBox(detection[i].type, detection[i].tag_title, detection[i].from_x, detection[i].from_y, detection[i].to_x, detection[i].to_y, getRandomColor()));
+			}
+		})
+		},1000);
+	}
+	
+	function loadZoom(element){
+		console.log(element);
+		current_index = images.indexOf($(element).attr("href").replace("/api/image/",""));
+		openImage(current_index);
+	}
+
+	function closeImage(){
+		$('#image-zoom').modal('hide');
+		$('#image-zoom').hide();
+		$('#image-container').hide();
+	}
+
+	function prevImage(){
+		current_index--;
+		if(current_index<0) current_index = images.length-1;
+		openImage(current_index)
+	}
+
+	function nextImage(){
+		current_index++;
+		if(current_index>=images.length) current_index = 0;
+		openImage(current_index)
+	}
+
+    function trashImage() {
+        $.ajax({
+            type: "POST",
+            url: "/api/removeImage",
+            data: {
+                "image_id": images[current_index]
+            },
+            success: function (data, status, res) {
+                console.log(data);
+                loadGallery(function(){
+			if(current_index>=images.length)
+				current_index--;
+			if(current_index>=0)
+				openImage(current_index);
+			else
+				closeImage();
+		});
+            },
+            error: function (res, textStatus, errorThrown) {
+                console.log(res.status);
+                alert("Image not remove !")
+            },
+            dataType: "json"
+        });
+    }
+    var myDropzone;
+    function initDropzone() {
+	myDropzone = new Dropzone("#dpz",{
+            url: "/api/upload",
+            addRemoveLinks: true,
+            maxFilesize: 5,
+            success: function (file, response) {
+                console.log(file);
+                $(file.previewElement).find('.dz-remove').remove();
+                var drop = this;
+                setTimeout(function () {
+                    drop.removeFile(file);
+                    loadGallery();
+                }, 2000);
+            },
+            error: function (file, response) {
+                console.log(file, response);
+                if (file.status == "error") {
+                    $(file.previewElement).addClass("dz-error");
+                    if (file.xhr && file.xhr.status && file.xhr.status == "413") {
+                        $(file.previewElement).find('.dz-error-message').text("Le fichier est trop volumineux");
+                    } else {
+                        $(file.previewElement).find('.dz-error-message').text(response);
+                    }
+                }
+            },
+            init: function () {
+                var _this = this;
+                this.on("processing", function (file) {
+                    _this.options.url = "/api/upload";
+                });
+            }
+        });
+    }
+	
+	function createBox(label, labelToPrint, fromPosX, fromPosY, toPosX, toPosY, color){
+            $box = $('<div class="box '+label+'-box" label="'+labelToPrint+'"> </div>');
+
+            let photoPos =  $("#image-content").position();
+            let actualHeight = $("#image-content").height();
+            let actualWidth = $("#image-content").width();
+            
+			var img = new Image();
+			img.src = $("#image-content").attr("src");
+			var initialWidth = img.width;
+			var initialHeight = img.height;
+	    console.log(actualWidth, actualHeight);
+            $box.css({
+                position: "absolute",
+                left: photoPos.left + fromPosX * (actualWidth / initialWidth) + "px",
+                top: photoPos.top + fromPosY * (actualHeight / initialHeight)+ "px",
+                width: (toPosX - fromPosX) * (actualWidth / initialWidth) + "px",
+                height: (toPosY - fromPosY) * (actualHeight / initialHeight) + "px",
+                border:"3px solid " + color
+            });
+
+            if(label == "face") $box.css({"z-index" : 5});
+			else $box.css({"z-index" : 4});
+
+            $box.on("mousemove", e => {
+                let pos = { top: e.pageY - 10, left: e.pageX + 10 };
+                $('#mouse-label').offset(pos);
+                if(labelToPrint == "NULL") labelToPrint = "Non défini";
+                $('#mouse-label').text(labelToPrint);
+                $('#mouse-label').show();
+            })
+
+            $box.on("mouseleave", e => {
+                $('#mouse-label').hide();
+            })
+
+            return $box;
+        }
+	function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+	
+	$('input[type="checkbox"]').change(function () {
+            var name = $(this).val();
+            var check = $(this).prop('checked');
+
+            if(check){
+                if(name == "faces"){
+                    for(let i = 0; i < photoDict.faces_detected.length; i++){
+                        let f = photoDict.faces_detected[i];
+                        let pos = f.position
+                        $("#wrapper").append(createBox("faces",f.tag_id, pos.from_x, pos.from_y, pos.to_x, pos.to_y, colorByTag["faces"]));
+                    }
+                } else {
+                    for(let i = 0; i < photoDict.objects_detected.length; i++){
+                        let o = photoDict.objects_detected[i];
+                        let pos = o.position
+                        if(o.tag_id == name) $("#wrapper").append(createBox(o.tag_id, o.tag_id, pos.from_x, pos.from_y, pos.to_x, pos.to_y, colorByTag[o.tag_id]));
+                    }
+                }
+            } else {
+                $("."+name+"-box").remove();
+            }
+
+        });
+</script>
+</body>
+
+</html>
